@@ -81,13 +81,13 @@ Fire_Perimeters/
 4. Run script: python 04_severity_organize.py
    
 5. Final rasters will be written to:
-    ```
+```
 ├── 1_Colorado_Severity_Data/ 
 │	├── Classified/
 │	├── Classified_Perimeter/
 │	├── Unclassified/
 │	├── Unclassified_Perimeter/
-   ```
+```
 ---
 
 ## Notes
