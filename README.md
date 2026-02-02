@@ -77,9 +77,9 @@ Fire_Perimeters/
    final_perimeter_update.gdb/fire_perimeters_update
    ```
 3. Intermediate Step: Requires processing in Google Earth Engine
-   ```
+   
 4. Run script: python 04_severity_organize.py
-   ```
+   
 5. Final rasters will be written to:
     ```
 ├── 1_Colorado_Severity_Data/ 
