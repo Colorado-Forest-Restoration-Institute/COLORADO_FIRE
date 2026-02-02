@@ -25,6 +25,7 @@ The workflow supports both **regular updates** (e.g., new data releases) and **q
    - Cleans fields, calculates acres, and writes to the final geodatabase.
 
 Post Google Earch Engine processing (Parks et al. 2018)
+
 4. **Classify Severity (`4_severity_organize.py`)**  
    - Extract Fire ID from filename (MTBS convention).
    - Lookup and sanitize Fire Name from MTBS perimeters.
