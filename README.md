@@ -7,7 +7,8 @@ The workflow supports both **regular updates** (e.g., new data releases) and **q
 
 ## Workflow Overview
 
-1. **Download Data (`1_data_attribute_mapping.py`)**  
+1. **Download Data (`1_data_attribute_mapping.py`)**
+   NOT FUNCTIONING AT THIS TIME -- ISSUES WITH DATA SOURCES -- DO NOT USE
    - Pulls source perimeter datasets (MTBS, NIFC, FACTS, BLM, etc.)  
    - May include normalization (field names, projections).  
 
@@ -21,7 +22,16 @@ The workflow supports both **regular updates** (e.g., new data releases) and **q
    - Merges attributes and dissolves geometry.  
    - Constructs consistent **Fire IDs** (MTBS-style) if missing.  
    - Standardizes names, labels, and units.  
-   - Cleans fields, calculates acres, and writes to the final geodatabase.  
+   - Cleans fields, calculates acres, and writes to the final geodatabase.
+
+Post Google Earch Engine processing (Parks et al. 2018)
+4. **Classify Severity (`4_severity_organize.py`)**  
+   - Extract Fire ID from filename (MTBS convention).
+   - Lookup and sanitize Fire Name from MTBS perimeters.
+   - Project raster to NAD83 UTM Zone 13N.
+   - Reclassify into Unburned (1), Low (2), Moderate (3), and High (4) severity.
+   - Clip both raw and classified rasters to the fire's boundary.
+   - Organize output into structured subdirectories.   
 
 ---
 
@@ -39,9 +49,8 @@ Fire_Perimeters/
 ├── data/     ← working geodatabase folder
 │	├── dwnld_perimeters.gdb
 │	├── final_perimeter_update.gdb
+│	   ├── fire_perimeters_update
 │	├── perimeter_update.gdb
-├── Colorado_Fire_Perimeters_1984_2024.gdb/
- 	├── Colorado_Fire_Perimeters_1984_2024
 ```
 
 ---
@@ -50,7 +59,7 @@ Fire_Perimeters/
 
 - ArcGIS Pro (with arcpy)  
 - Python 3.x (as installed with ArcGIS Pro)  
-- pandas, numpy  
+- pandas, numpy, re  
 
 ---
 
@@ -61,13 +70,23 @@ Fire_Perimeters/
    python 01_download_data.py
    python 02_duplicate_check.py
    python 03_finalize_update.py
-   python 04_severity_organize.py
    ```
 2. Final output will be written to:  
    ```
-   Colorado_Fire_Perimeters_1984_2024.gdb/Colorado_Fire_Perimeters_1984_2024
+   final_perimeter_update.gdb/fire_perimeters_update
    ```
-
+3. Intermediate Step: Requires processing in Google Earth Engine
+   ```
+4. Run script: python 04_severity_organize.py
+   ```
+5. Final rasters will be written to:
+    ```
+├── 1_Colorado_Severity_Data/ 
+│	├── Classified/
+│	├── Classified_Perimeter/
+│	├── Unclassified/
+│	├── Unclassified_Perimeter/
+   ```
 ---
 
 ## Notes
