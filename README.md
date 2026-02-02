@@ -34,11 +34,12 @@ Fire_Perimeters/
 │	├── 1_data_attribute_mapping.py
 │	├── 2_tag_duplicates.py
 │	├── 3_finalize_perimeters.py
+│	├── 4_severity_organize.py
 ├── README.md   
-├── UPDATE/     ← working geodatabase folder
+├── data/     ← working geodatabase folder
 │	├── dwnld_perimeters.gdb
+│	├── final_perimeter_update.gdb
 │	├── perimeter_update.gdb
-│	├── scratch
 ├── Colorado_Fire_Perimeters_1984_2024.gdb/
  	├── Colorado_Fire_Perimeters_1984_2024
 ```
@@ -60,6 +61,7 @@ Fire_Perimeters/
    python 01_download_data.py
    python 02_duplicate_check.py
    python 03_finalize_update.py
+   python 04_severity_organize.py
    ```
 2. Final output will be written to:  
    ```
