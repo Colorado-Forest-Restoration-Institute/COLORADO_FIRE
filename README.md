@@ -7,17 +7,12 @@ The workflow supports both **regular updates** (e.g., new data releases) and **q
 
 ## Workflow Overview
 
-1. **Download Data (`1_data_attribute_mapping.py`)**
-   NOT FUNCTIONING AT THIS TIME -- ISSUES WITH DATA SOURCES -- DO NOT USE
-   - Pulls source perimeter datasets (MTBS, NIFC, FACTS, BLM, etc.)  
-   - May include normalization (field names, projections).  
-
-2. **Duplicate Check (`2_tag_duplicates.py`)**  
+1. **Duplicate Check (`2_tag_duplicates.py`)**  
    - Identifies overlapping/duplicate perimeters from different sources.  
    - Flags true duplicates and assigns a `priority` ranking to sources.  
    - Creates `duplication_check_output` in `perimeter_update.gdb`.  
 
-3. **Finalize Update (`3_finalize_perimeters.py`)**  
+2. **Finalize Update (`3_finalize_perimeters.py`)**  
    - For each duplicate group, selects the “best” record by priority.  
    - Merges attributes and dissolves geometry.  
    - Constructs consistent **Fire IDs** (MTBS-style) if missing.  
@@ -26,7 +21,7 @@ The workflow supports both **regular updates** (e.g., new data releases) and **q
 
 Post Google Earch Engine processing (Parks et al. 2018)
 
-4. **Classify Severity (`4_severity_organize.py`)**  
+3. **Classify Severity (`4_severity_organize.py`)**  
    - Extract Fire ID from filename (MTBS convention).
    - Lookup and sanitize Fire Name from MTBS perimeters.
    - Project raster to NAD83 UTM Zone 13N.
