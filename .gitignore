@@ -1,0 +1,12 @@
+# Ignore heavy R data inputs/outputs if they are copied locally
+threshold_calibration/OUTPUT/
+*.raster
+*.tif
+
+# Ignore all local data files, shapefiles, and temporary outputs
+data/
+*.gdb/
+*.gdb
+
+# Ignore download script until completed
+production_pipeline/0_Rest_service_dwnld.py
