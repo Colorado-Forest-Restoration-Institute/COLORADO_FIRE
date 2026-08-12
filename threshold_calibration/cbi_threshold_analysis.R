@@ -15,8 +15,8 @@
 #                   forest-specific metrics and thresholds.
 #
 
-RUN_MODE <- "GLOBAL" 
-#RUN_MODE <- "STRATIFIED" 
+#RUN_MODE <- "GLOBAL" 
+RUN_MODE <- "STRATIFIED" 
 
 # Severity indices
 indices <- c("dnbr", "dnbr_off", "rbr", "rbr_off", "rdnbr", "rdnbr_off")
@@ -187,18 +187,18 @@ for(forest_name in names(data_list)){
     # Format the calculated thresholds into clean, readable text string
     threshold_string <- case_when(
       scheme_name == "CBI_4" ~ paste0(
-        "Unburned < ", round(vals[1], 1),
-        " | Low >= ",  round(vals[1], 1), 
-        " | Mod >= ",  round(vals[2], 1), 
-        " | High >= ", round(vals[3], 1)
+        "Unburned < ", round(vals[1], 0),
+        " | Low >= ",  round(vals[1], 0), 
+        " | Mod >= ",  round(vals[2], 0), 
+        " | High >= ", round(vals[3], 0)
       ),
       scheme_name == "CBI_3" ~ paste0(
-        "Low/Unburned < ", round(vals[1], 1),
-        " | Mod >= ",      round(vals[1], 1), 
-        " | High >= ",     round(vals[2], 1)
+        "Low/Unburned < ", round(vals[1], 0),
+        " | Mod >= ",      round(vals[1], 0), 
+        " | High >= ",     round(vals[2], 0)
       ),
       scheme_name == "CBI_high" ~ paste0(
-        "High >= ", round(vals[1], 1)
+        "High >= ", round(vals[1], 0)
       ),
       TRUE ~ NA_character_
     )

@@ -14,7 +14,7 @@ FINAL_GDB = os.path.join(DATA_DIR, 'final_perimeter_update.gdb')
 
 # --- EXTERNAL ASSETS ---
 STATES_LYR = os.path.join(DRIVE_E, r'BASE_LAYER_DATA\ADMINISTRATIVE_BOUNDARIES\US_States')
-SEVERITY_BASE = os.path.join(DRIVE_E, r'Colorado_Fire_Severity\Fire_Severity_Data\1_Colorado_Severity_Data')
+SEVERITY_BASE = os.path.join(DRIVE_E, r'Colorado_Fire_Severity\Fire_Severity_Data\1_Colorado_Severity_Data\raw_data')
 PERIMETERS = os.path.join(BOX_DIR,
                           r'Fire_Perimeters\Colorado_Fire_Perimeters_1984_2025.gdb\Colorado_Fire_Perimeters_1984_2025')
 

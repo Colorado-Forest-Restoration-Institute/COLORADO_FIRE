@@ -45,16 +45,22 @@ arcpy.env.qualifiedFieldNames = False
 arcpy.CheckOutExtension('spatial')
 
 # Data Dictionaries
-SEV_TYPES = ["dNBR", "dNBR_offset", "RBR", "RBR_offset", "RdNBR", "RdNBR_offset"]
-#SEV_TYPES = ["RdNBR_offset"]  # When running very large datasets, it is recommended to run severity subsets to avoid crashout #
-
 SEV_LOOKUP = {
-    "dNBR": [23, 96, 150],
-    "dNBR_offset": [16, 89, 144],
-    "RBR": [20, 83, 131],
-    "RBR_offset": [14, 78, 126],
-    "RdNBR": [65, 262, 410],
-    "RdNBR_offset": [48, 246, 394]
+    "dNBR": [53, 133],          # Low/Unburned < 53  | Mod >= 53  | High >= 133
+    "dNBR_offset": [45, 125],   # Low/Unburned < 45  | Mod >= 45  | High >= 125
+    "RBR": [47, 117],           # Low/Unburned < 47  | Mod >= 47  | High >= 117
+    "RBR_offset": [40, 110],    # Low/Unburned < 40  | Mod >= 40  | High >= 110
+    "RdNBR": [154, 376],        # Low/Unburned < 154 | Mod >= 154 | High >= 376
+    "RdNBR_offset": [134, 356]  # Low/Unburned < 134 | Mod >= 134 | High >= 356
+}
+
+GEE_SUFFIX_MAP = {
+    "dNBR": "dnbr",
+    "dNBR_offset": "dnbr_w_offset",
+    "RBR": "rbr",
+    "RBR_offset": "rbr_w_offset",
+    "RdNBR": "rdnbr",
+    "RdNBR_offset": "rdnbr_w_offset"
 }
 
 
@@ -89,27 +95,26 @@ def classify_raster(in_raster, sev_type):
 
     limits = SEV_LOOKUP.get(sev_type)
     if not limits:
+        arcpy.AddWarning(f"Severity type {sev_type} not found in SEV_LOOKUP.")
         return None
 
-    ub_max, l_max, m_max = limits
+    l_max, m_max = limits
 
     # Format: [Start, End, NewValue]
     remap_list = []
-    # Unburned
-    if min_val <= ub_max:
-        remap_list.append([min_val - 1, ub_max, 1])
-    # Low
-    if max_val > ub_max:
-        start = ub_max + 0.000001 if min_val <= ub_max else min_val - 1
-        remap_list.append([start, l_max, 2])
+    # Unburned/Low
+    if min_val < l_max:
+        remap_list.append([min_val - 1, l_max, 1])
     # Moderate
-    if max_val > l_max:
-        start = l_max + 0.000001 if min_val <= l_max else min_val - 1
-        remap_list.append([start, m_max, 3])
+    if max_val > l_max and min_val < m_max:
+        remap_list.append([l_max, m_max, 2])
     # High
     if max_val > m_max:
-        start = m_max + 0.000001 if min_val <= m_max else min_val - 1
-        remap_list.append([start, max_val + 1, 4])
+        start_high = m_max if min_val < m_max else min_val - 1
+        remap_list.append([start_high, max_val + 1, 3])
+
+    if not remap_list:
+        arcpy.AddWarning(f"No valid reclassification ranges found for {sev_type} - (Min: {min_val}, Max: {max_val})")
 
     return Reclassify(in_raster, "VALUE", RemapRange(remap_list), "NODATA")
 
@@ -184,25 +189,27 @@ fire_perim_lyr = arcpy.MakeFeatureLayer_management(PERIMETERS, "fire_perim_lyr")
 
 failed_rasters = []
 
-for sev in SEV_TYPES:
+for sev in SEV_LOOKUP.keys():
     print(f"--- Starting Severity Group: {sev} ---")
 
     # Set current workspace to the unclassified data folder
-    data_dir = os.path.join(SEVERITY_BASE, "raw_data", sev)
+    data_dir = os.path.join(SEVERITY_BASE, "raw_data")
     arcpy.env.workspace = data_dir
 
-    sev_rasters = arcpy.ListRasters("*.tif")
-    # sev_rasters = sev_rasters[:10]  #testing split
-    # print(sev_rasters)
-    for raster in sev_rasters:
-        result = process_fire(raster, sev, fire_perim_lyr, SEVERITY_BASE)
+    gee_suffix = GEE_SUFFIX_MAP.get(sev)
+    sev_rasters = arcpy.ListRasters(f"*_{gee_suffix}", "TIF")
+    print(f"Found {len(sev_rasters) if sev_rasters else 0} rasters matching '*_{gee_suffix}.tif'")
 
-        if result:
-            failed_rasters.append({
-                "Raster": raster,
-                "Type": sev,
-                "Reason": result
-            })
+    if sev_rasters:
+        for raster in sev_rasters:
+            result = process_fire(raster, sev, fire_perim_lyr, SEVERITY_BASE)
+
+            if result:
+                failed_rasters.append({
+                    "Raster": raster,
+                    "Type": sev,
+                    "Reason": result
+                })
 
 # --- FINAL SUMMARY REPORT ---
 print("\n" + "="*30)
