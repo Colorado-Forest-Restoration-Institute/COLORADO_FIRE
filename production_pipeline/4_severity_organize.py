@@ -36,9 +36,10 @@ Structured by Severity Type (e.g., Classified_Perimeter/dNBR/):
 import arcpy
 import os
 import re
+import shutil
 from arcpy.sa import *
 from datetime import date
-from PATHS import SEVERITY_DIR, PERIMETERS
+from PATHS import SEVERITY_DIR, PERIMETERS, BOX_DIR
 
 arcpy.env.overwriteOutput = True
 arcpy.env.qualifiedFieldNames = False
@@ -231,3 +232,24 @@ if failed_rasters:
     print(f"\nError log saved to: {log_file}")
 else:
     print("All rasters processed successfully!")
+
+# --- AUTOMATED BOX DEPLOYMENT SYSTEM ---
+print("\n" + "="*50)
+print("STARTING DEPLOYMENT TO SHAREABLE BOX FOLDER")
+print("="*50)
+
+try:
+    box_deployment_target = os.path.join(BOX_DIR, 'Fire_Severity_Data', '1_Colorado_Severity_Data')
+    print(f"Syncing clean local outputs to Box...")
+    print(f"Source: {SEVERITY_DIR}")
+    print(f"Destination: {box_deployment_target}")
+
+    shutil.copytree(SEVERITY_DIR, box_deployment_target, dirs_exist_ok=True)
+
+    print("\n[SUCCESS] All structured severity maps successfully deployed to Box!")
+    print("Your coworkers can now access the latest outputs.")
+
+except ImportError:
+    print("[ERROR] Could not import paths. Make sure PATHS.py is in the same directory.")
+except Exception as e:
+    print(f"[WARNING] Local run completed, but automated Box sync failed: {str(e)}")
