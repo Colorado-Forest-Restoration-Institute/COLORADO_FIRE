@@ -15,8 +15,8 @@
 #                   forest-specific metrics and thresholds.
 #
 
-#RUN_MODE <- "GLOBAL" 
-RUN_MODE <- "STRATIFIED" 
+RUN_MODE <- "GLOBAL" 
+#RUN_MODE <- "STRATIFIED" 
 
 # Severity indices
 indices <- c("dnbr", "dnbr_off", "rbr", "rbr_off", "rdnbr", "rdnbr_off")

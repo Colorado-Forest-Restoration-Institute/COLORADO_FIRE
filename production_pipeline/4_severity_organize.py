@@ -38,7 +38,7 @@ import os
 import re
 from arcpy.sa import *
 from datetime import date
-from PATHS import SEVERITY_BASE, PERIMETERS
+from PATHS import SEVERITY_DIR, PERIMETERS
 
 arcpy.env.overwriteOutput = True
 arcpy.env.qualifiedFieldNames = False
@@ -141,10 +141,10 @@ def process_fire(raster_name, sev_type, perimeter_lyr, classification_dir):
 
         # 4. Define outpaths
         folders = {
-            "unclass_ext": os.path.join(classification_dir, "Unclassified", sev_type),
-            "unclass_clip": os.path.join(classification_dir, "Unclassified_Perimeter", sev_type),
-            "class_ext": os.path.join(classification_dir, "Classified", sev_type),
-            "class_clip": os.path.join(classification_dir, "Classified_Perimeter", sev_type)
+            "unclass_ext": os.path.join(SEVERITY_DIR, "Unclassified", sev_type),
+            "unclass_clip": os.path.join(SEVERITY_DIR, "Unclassified_Perimeter", sev_type),
+            "class_ext": os.path.join(SEVERITY_DIR, "Classified", sev_type),
+            "class_clip": os.path.join(SEVERITY_DIR, "Classified_Perimeter", sev_type)
         }
 
         for folder_path in folders.values():
@@ -193,7 +193,7 @@ for sev in SEV_LOOKUP.keys():
     print(f"--- Starting Severity Group: {sev} ---")
 
     # Set current workspace to the unclassified data folder
-    data_dir = os.path.join(SEVERITY_BASE, "raw_data")
+    data_dir = os.path.join(SEVERITY_DIR, "raw_data")
     arcpy.env.workspace = data_dir
 
     gee_suffix = GEE_SUFFIX_MAP.get(sev)
@@ -202,7 +202,7 @@ for sev in SEV_LOOKUP.keys():
 
     if sev_rasters:
         for raster in sev_rasters:
-            result = process_fire(raster, sev, fire_perim_lyr, SEVERITY_BASE)
+            result = process_fire(raster, sev, fire_perim_lyr, SEVERITY_DIR)
 
             if result:
                 failed_rasters.append({
@@ -222,7 +222,7 @@ if failed_rasters:
         print(f"- {item['Raster']} ({item['Type']}): {item['Reason']}")
 
     file_date = date.today().strftime("%Y%m%d")
-    log_file = os.path.join(SEVERITY_BASE, f"processing_errors_{file_date}.txt")
+    log_file = os.path.join(SEVERITY_DIR, f"processing_errors_{file_date}.txt")
 
     with open(log_file, 'w') as f:
         f.write("Raster_Name, Severity_Type, Error_Reason\n")
